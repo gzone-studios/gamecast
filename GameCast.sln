@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameCastClient", "GameCastClient\GameCastClient.csproj", "{EDD63ACB-163B-4BB0-A5A1-34EB21A49D63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameCastServer", "GameCastServer\GameCastServer.csproj", "{51EBCF41-7A57-43F6-ACF3-763E23C82B0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameCastCore", "GameCastCore\GameCastCore.csproj", "{2F05E0BB-5899-47A1-B9C3-4658920808B7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDD63ACB-163B-4BB0-A5A1-34EB21A49D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDD63ACB-163B-4BB0-A5A1-34EB21A49D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDD63ACB-163B-4BB0-A5A1-34EB21A49D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDD63ACB-163B-4BB0-A5A1-34EB21A49D63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51EBCF41-7A57-43F6-ACF3-763E23C82B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51EBCF41-7A57-43F6-ACF3-763E23C82B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51EBCF41-7A57-43F6-ACF3-763E23C82B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51EBCF41-7A57-43F6-ACF3-763E23C82B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F05E0BB-5899-47A1-B9C3-4658920808B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F05E0BB-5899-47A1-B9C3-4658920808B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F05E0BB-5899-47A1-B9C3-4658920808B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F05E0BB-5899-47A1-B9C3-4658920808B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
