@@ -9,6 +9,8 @@
         <Authors>Niklas Vlach</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/gzone-studios/gamecast</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
