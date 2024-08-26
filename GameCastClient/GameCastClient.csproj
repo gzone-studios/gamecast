@@ -3,7 +3,7 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.9</Version>
+        <Version>0.0.10</Version>
         <Title>GameCastClient</Title>
         <Authors>Niklas Vlach</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>

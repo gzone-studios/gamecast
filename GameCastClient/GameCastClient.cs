@@ -15,27 +15,30 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
     where TUserMessage : IUserMessage
 {
     
-    // Delegates
+    // delegate definitions
     public delegate void RoomStateChangedDelegate(TRoomState? data);
     public delegate void UserStateChangedDelegate(string userId, TUserState? data);
     public delegate void MessageToHostDelegate(string senderId, TUserMessage message);
     
-    // 
+    // delegates
     private RoomStateChangedDelegate? _roomStateChanged;
     private UserStateChangedDelegate? _userStateChanged;
     private MessageToHostDelegate? _messageToHost;
     
-    //
+    // clients
     private readonly HttpClient _http = new();
     private readonly WebsocketClient _ws = new();
     
-    // 
+    // server data
     private readonly string _server;
     private readonly int _port;
     private readonly bool _secure;
+    
+    // app data
     private readonly Application? _application;
     
-    private string _userId;
+    // user data
+    private readonly string _userId;
     private string? _userName;
     
     // room data
@@ -44,32 +47,48 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
     public TRoomState? RoomState { get; private set; }
     public ConcurrentDictionary<string, TUserState> UserState { get; } = new();
     
-    //
-    
+    // schemes
     private string WsScheme => _secure ? "wss://" : "ws://";
     private string HttpScheme => _secure ? "https://" : "http://";
     
     // Constructors
 
-    public GameCastClient(string server, int port, bool secure = false, string? userId = null, string? userName = null, Application? application = null)
+    public GameCastClient(string server, int port, bool secure = false, string? userId = null, Application? application = null)
     {
         _server = server;
         _port = port;
         _secure = secure;
-        _userId = userId ?? Guid.NewGuid().ToString();
-        _userName = userName;
         _application = application;
+        
+        _userId = userId ?? Guid.NewGuid().ToString();
         
         _ws.OnReceiveAsync = _OnReceiveAsync;
     }
     
     // 
     
-    public async Task<RoomDataResponse?> CreateRoom(CreateRoomRequest request)
+    /// <summary>
+    /// Changes the username. This change will only be reflected when reconnection to a room
+    /// </summary>
+    /// <param name="userName"></param>
+    public void SetUserName(string? userName)
+    {
+        _userName = userName;
+    }
+    
+    public Task<RoomDataResponse?> CreateRoom(string? password = null)
     {
         // only create a room if application information is provided
-        if(_application == null) return null;
-        
+        if(_application == null) return Task.FromResult<RoomDataResponse?>(null);
+
+        // create room
+        CreateRoomRequest request = new(_application.Identifier, _application.Tag, _application.MinPlayers,
+            _application.MaxPlayers, password);
+        return CreateRoom(request);
+    }
+    
+    public async Task<RoomDataResponse?> CreateRoom(CreateRoomRequest request)
+    {
         // create room reservation
         Uri uri = BuildUri(HttpScheme, _server, _port, $"/api/rooms");
         string requestBody = JsonSerializer.Serialize(request);
@@ -129,9 +148,11 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
         if(_application != null && data.ApplicationTag != _application.Tag ) return;
         
         // build room uri
-        Dictionary<string, string> queryParams = new();
-        queryParams.Add("role", role.StringValue());
-        if(!string.IsNullOrEmpty(_userId)) queryParams.Add("user-id", _userId);
+        Dictionary<string, string> queryParams = new()
+        {
+            { "role", role.StringValue() },
+            { "user-id", _userId }
+        };
         if(!string.IsNullOrEmpty(_userName)) queryParams.Add("name", _userName);
         Uri uri = BuildUri(WsScheme, data.Server, _port, $"/api/rooms/{data.Code}/play", queryParams);
         
