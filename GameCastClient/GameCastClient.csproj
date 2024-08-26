@@ -3,13 +3,15 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.8</Version>
+        <Version>0.0.9</Version>
         <Title>GameCastClient</Title>
         <Authors>Niklas Vlach</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <TargetFrameworks>net6.0;net7.0;net8.0;</TargetFrameworks>
         <RootNamespace>GameCast.Client</RootNamespace>
+        <RepositoryUrl>https://github.com/gzone-studios/gamecast</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
