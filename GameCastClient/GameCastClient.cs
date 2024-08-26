@@ -45,7 +45,7 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
 
     public async Task CreateRoom(string code)
     {
-        string uri = _CreateRoomUri(Address, code, "host", "NiklasZeroZero", Guid.NewGuid().ToString());
+        string uri = _CreateRoomUri(Address, code, Role.Host, "NiklasZeroZero", Guid.NewGuid().ToString());
         await _wsClient.ConnectAsync(new Uri(uri));
         CurrentRoom = code;
         HasCurrentRoom = true;
@@ -54,15 +54,15 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
 
     public async Task JoinRoom(string code)
     {
-        string uri = _CreateRoomUri(Address, code, "player", "NiklasZeroZero", Guid.NewGuid().ToString());
+        string uri = _CreateRoomUri(Address, code, Role.Player, "NiklasZeroZero", Guid.NewGuid().ToString());
         await _wsClient.ConnectAsync(new Uri(uri));
         CurrentRoom = code;
         HasCurrentRoom = true;
         RoomJoined(CurrentRoom);
     }
 
-    private string _CreateRoomUri(string server, string code, string role, string name, string userId) 
-        => $"{server}/api/room/{code}/play?role={role}&name={name}&user-id={userId}";
+    private string _CreateRoomUri(string server, string code, Role role, string name, string userId) 
+        => $"{server}/api/room/{code}/play?role={role.StringValue()}&name={name}&user-id={userId}";
     
     public async Task LeaveRoom()
     {

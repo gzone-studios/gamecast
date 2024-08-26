@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>GameCast.Core</RootNamespace>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>Niklas Vlach</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>

@@ -11,7 +11,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
     
     private readonly ConnectionManager _connectionManager = connectionManager;
 
-    public User? ValidateConnection(string? roomCode, string? role, string? userId, string? username)
+    public User? ValidateConnection(string? roomCode, string? userId, string? username, Role role)
     {
         // validate room code
         if (string.IsNullOrEmpty(roomCode))
@@ -20,11 +20,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
         // validate room
         if (!gameManager.DoesRoomExist(roomCode))
             return null;
-
-        // validate role
-        if (role != "host" && role != "player")
-            return null;
-
+        
         // validate user data
         if (string.IsNullOrEmpty(userId))
             return null;
@@ -43,7 +39,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
         return user;
     }
 
-    public async Task<string> OnConnected(WebSocket socket, string roomCode, string userId, string role)
+    public async Task<string> OnConnected(WebSocket socket, string roomCode, string userId, Role role)
     {
         // set socket id
         string socketId = await base.OnConnected(socket);

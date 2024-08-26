@@ -1,4 +1,5 @@
 ﻿using System.Net.WebSockets;
+using GameCast.Core.Models;
 using GameCast.Server.Handlers;
 using GameCast.Server.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,21 @@ public class PlayController(GameHandler gameHandler) : ControllerBase
             return BadRequest();
 
         // validate connection data (role, name, userid)
-        string? role = HttpContext.Request.Query["role"];
+        string? roleString = HttpContext.Request.Query["role"];
         string? userId = HttpContext.Request.Query["user-id"];
         string? userName = HttpContext.Request.Query["name"];
-        User? user = gameHandler.ValidateConnection(code, role, userId, userName);
+        
+        Role? role = RoleExtensions.TryParse(roleString);
+        if (role == null)
+            return BadRequest();
+        
+        User? user = gameHandler.ValidateConnection(code, userId, userName, role.Value);
         if (user == null)
             return BadRequest();
 
         // accept websocket
         WebSocket socket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-        await gameHandler.OnConnected(socket, code, user.Identifier, role!);
+        await gameHandler.OnConnected(socket, code, user.Identifier, role.Value);
 
         // listen for websocket
         await Receive(socket, (result, buffer) => _ = gameHandler.ReceiveAsync(socket, result, buffer));

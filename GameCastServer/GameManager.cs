@@ -1,4 +1,5 @@
-﻿using GameCast.Server.Models;
+﻿using GameCast.Core.Models;
+using GameCast.Server.Models;
 
 namespace GameCast.Server;
 
@@ -10,19 +11,19 @@ public class GameManager(UserManager userManager, RoomManager roomManager)
         return room != null;
     }
 
-    public bool CanJoinRoom(string roomCode, string userId, string role)
+    public bool CanJoinRoom(string roomCode, string userId, Role role)
     {
         Room? room = roomManager.GetRoom(roomCode);
         if (room == null) return false;
         return CanJoinRoom(room, userId, role);
     }
 
-    public bool CanJoinRoom(Room room, string userId, string role)
+    public bool CanJoinRoom(Room room, string userId, Role role)
     {
         return role switch
         {
-            "host" => !room.HasHost || room.IsHost(userId),
-            "player" => !room.IsFull || room.IsMember(userId),
+            Role.Host => !room.HasHost || room.IsHost(userId),
+            Role.Player => !room.IsFull || room.IsMember(userId),
             _ => false
         };
     }
@@ -37,27 +38,27 @@ public class GameManager(UserManager userManager, RoomManager roomManager)
         return roomManager.GetRoomsByMemberId(userId);
     }
 
-    public bool JoinRoom(string roomCode, string userId, string role)
+    public bool JoinRoom(string roomCode, string userId, Role role)
     {
         Room? room = roomManager.GetRoom(roomCode);
         if (room == null) return false;
         return JoinRoom(room, userId, role);
     }
 
-    public bool JoinRoom(Room room, string userId, string role)
+    public bool JoinRoom(Room room, string userId, Role role)
     {
         if (!CanJoinRoom(room, userId, role)) return false;
         switch (role)
         {
-            case "host":
+            case Role.Host:
                 room.SetHost(userId);
                 return true;
-            case "player":
+            case Role.Player:
                 room.AddMember(userId);
                 return true;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(role), role, null);
         }
-
-        return false;
     }
 
     public void LeaveRooms(User user)
