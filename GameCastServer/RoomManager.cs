@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using GameCast.Core.Models;
 using GameCast.Server.Models;
 
 namespace GameCast.Server;

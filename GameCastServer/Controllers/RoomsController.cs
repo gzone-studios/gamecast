@@ -1,4 +1,5 @@
-﻿using GameCast.Core.Models.Request;
+﻿using GameCast.Core.Models;
+using GameCast.Core.Models.Request;
 using GameCast.Core.Models.Response;
 using GameCast.Server.Models;
 using Microsoft.AspNetCore.Mvc;

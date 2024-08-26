@@ -1,4 +1,6 @@
-﻿namespace GameCast.Server.Models;
+﻿using GameCast.Core.Models;
+
+namespace GameCast.Server.Models;
 
 public class Room(string code, Application app, string server)
 {
@@ -30,14 +32,14 @@ public class Room(string code, Application app, string server)
     ///     Members can but not must contain the owner of the room.
     ///     All changes in room or user data will be sent so all members.
     /// </summary>
-    public List<string> Members { get; } = new();
+    public List<string> Members { get; } = [];
 
     /// <summary>
     ///     The current state of the room.
     ///     This value can be set by the host to reflect all non member bound state of the room.
     ///     Examples include: Has the game started? Current Round? Current Time Remaining?
     /// </summary>
-    public object? RoomState { get; }
+    public object? RoomState { get; private set; }
 
     /// <summary>
     ///     The current state of the member.
@@ -89,7 +91,7 @@ public class Room(string code, Application app, string server)
 
     public void SetRoomState(object? roomState)
     {
-        roomState = roomState;
+        RoomState = roomState;
     }
 
     public object? GetMemberState(string memberId)
