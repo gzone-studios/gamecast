@@ -11,6 +11,8 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
     
     private readonly ConnectionManager _connectionManager = connectionManager;
 
+    private UsernameGenerator _usernameGenerator = new UsernameGenerator();
+    
     public User? ValidateConnection(string? roomCode, string? userId, string? username, Role role)
     {
         // validate room code
@@ -24,8 +26,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
         // validate user data
         if (string.IsNullOrEmpty(userId))
             return null;
-        if (string.IsNullOrEmpty(username))
-            return null;
+        username = string.IsNullOrEmpty(username) ? _usernameGenerator.Next() : username;
 
         // add user
         User user = new(userId, username);
