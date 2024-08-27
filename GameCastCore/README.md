@@ -1,3 +1,3 @@
-# GameCast Core
+# GameCastCore
 
-Core parts that both GameCast Client and GameCast Server require.
+The **GameCastCore** project contains the shared logic and models used by both the GameCastServer and GameCastClient. It ensures consistency and reusability across the project.
