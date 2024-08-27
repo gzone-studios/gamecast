@@ -1,3 +1,11 @@
+---
+title: Home
+layout: home
+nav_order: 1
+description: ""
+permalink: /
+---
+
 # GameCast Documentation
 
 This documentation covers the GameCastServer as well as the GameCastClient.

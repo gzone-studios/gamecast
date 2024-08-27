@@ -1,3 +1,8 @@
+---
+title: Glossary
+nav_order: 2
+---
+
 # Glossary
 
 ## Server
