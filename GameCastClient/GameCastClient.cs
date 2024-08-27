@@ -1,7 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 using GameCast.Core.Models;
 using GameCast.Core.Models.Request;
 using GameCast.Core.Models.Response;
@@ -16,11 +19,13 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
 {
     
     // delegate definitions
+    public delegate void RoomChangedDelegate();
     public delegate void RoomStateChangedDelegate(TRoomState? data);
     public delegate void UserStateChangedDelegate(string userId, TUserState? data);
     public delegate void MessageToHostDelegate(string senderId, TUserMessage message);
     
     // delegates
+    private RoomChangedDelegate? _roomChanged;
     private RoomStateChangedDelegate? _roomStateChanged;
     private UserStateChangedDelegate? _userStateChanged;
     private MessageToHostDelegate? _messageToHost;
@@ -62,7 +67,7 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
         
         _userId = userId ?? Guid.NewGuid().ToString();
         
-        _ws.OnReceiveAsync = _OnReceiveAsync;
+        _ws.OnReceiveMessage(_OnReceiveAsync);
     }
     
     // 
@@ -121,8 +126,8 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
     /// <param name="role"></param>
     public async Task JoinRoom(string code, Role role)
     {
-        // only join room if not currently in a room
-        if(CurrentRoom != null) return;
+        // only join room if not currently connected
+        if(_ws.State == WebSocketState.Open) return;
         
         // get room data
         RoomDataResponse? response = await GetRoom(code);
@@ -141,8 +146,8 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
     /// <param name="role"></param>
     public async Task JoinRoom(RoomDataResponse data, Role role)
     {
-        // only join room if not currently in a room
-        if(CurrentRoom != null) return;
+        // only join room if not currently connected
+        if(_ws.State == WebSocketState.Open) return;
         
         // if app is set, only join if app matches room's app
         if(_application != null && data.ApplicationTag != _application.Tag ) return;
@@ -156,9 +161,12 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
         if(!string.IsNullOrEmpty(_userName)) queryParams.Add("name", _userName);
         Uri uri = BuildUri(WsScheme, data.Server, _port, $"/api/rooms/{data.Code}/play", queryParams);
         
+        Debug.Print(uri.ToString());
+        
         // join room
         await _ws.ConnectAsync(uri);
         CurrentRoom = data.Code;
+        _roomChanged?.Invoke();
     }
     
     /// <summary>
@@ -167,11 +175,17 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
     public async Task LeaveRoom()
     {
         // only leave room if currently in a room
-        if(CurrentRoom == null) return;
+        if(_ws.State != WebSocketState.Open) return;
         
         // leave room
         CurrentRoom = null;
         await _ws.DisconnectAsync();
+        _roomChanged?.Invoke();
+    }
+    
+    public void OnRoomChanged(RoomChangedDelegate? @delegate)
+    {
+        _roomChanged = @delegate;
     }
     
     /// <summary>
@@ -257,7 +271,7 @@ public class GameCastClient<TRoomState, TUserState, TUserMessage> where TRoomSta
         // add query params
         if (queryParams != null && queryParams.Count > 0)
         {
-            NameValueCollection query = new();
+            NameValueCollection query = HttpUtility.ParseQueryString(string.Empty);
             foreach (KeyValuePair<string, string> param in queryParams)
             {
                 query[param.Key] = param.Value;
