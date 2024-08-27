@@ -15,15 +15,32 @@ public class RoomManager
         "CRAP", "SLUT", "JERK", "BUTT", "ARSE", "PRAT", "TURD", "MUFF", "SCUM", "SUCK"
     };
 
-    private static readonly Random _random = new();
+    private static readonly Random Random = new();
+    private static Timer? _timer;
 
+    private readonly ConcurrentDictionary<string, RoomReservation> _reservations = new();
     private readonly ConcurrentDictionary<string, Room> _rooms = new();
-
+    
+    public bool ReservationExists(string code)
+    {
+        return _reservations.ContainsKey(code);
+    }
+    
     public bool RoomExists(string code)
     {
         return _rooms.ContainsKey(code);
     }
 
+    public RoomReservation? GetReservation(string code)
+    {
+        return _reservations.GetValueOrDefault(code);
+    }
+
+    public RoomReservation? GetAndRemoveReservation(string code)
+    {
+        return _reservations.TryRemove(code, out RoomReservation? reservation) ? reservation : null;
+    }
+    
     public Room? GetRoom(string code)
     {
         return _rooms.GetValueOrDefault(code);
@@ -38,8 +55,7 @@ public class RoomManager
     {
         return _rooms.Where(r => r.Value.IsHost(userId)).Select(r => r.Value).ToList();
     }
-
-
+    
     public List<Room> GetRoomsByMemberId(User user)
     {
         return GetRoomsByMemberId(user.Identifier);
@@ -50,21 +66,82 @@ public class RoomManager
         return _rooms.Where(r => r.Value.IsMember(userId)).Select(r => r.Value).ToList();
     }
 
-    public string CreateRoom(Application app)
+    /// <summary>
+    /// Create a new Room reservation.
+    /// A reservation does not hold users or state.
+    /// A reservation has a limited lifetime.
+    /// </summary>
+    /// <param name="app"></param>
+    /// <returns></returns>
+    public RoomReservation CreateReservation(Application app)
     {
         string roomCode = GenerateUniqueRoomCode();
+        
+        RoomReservation reservation = new(roomCode, app, "localhost", DateTime.Now);
+        _reservations[roomCode] = reservation;
+        
+        return reservation;
+    }
+    
+    /// <summary>
+    /// Create a room from a reservation.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <returns></returns>
+    public Room? CreateRoomFromReservation(string code)
+    {
+        RoomReservation? reservation = GetAndRemoveReservation(code);
+        if (reservation == null) return null;
+        
+        Room room = new(reservation.Code, reservation.Application, reservation.Server, DateTime.Now);
+        _rooms[room.Code] = room;
 
-        Room room = new(roomCode, app, "localhost");
-        _rooms[roomCode] = room;
-
-        return roomCode;
+        return room;
     }
 
+    public void RemoveReservation(string code)
+    {
+        _reservations.TryRemove(code, out _);
+    }
+    
     public void RemoveRoom(string code)
     {
         _rooms.TryRemove(code, out _);
     }
 
+    public void CloseRoom(string code)
+    {
+        RemoveRoom(code);
+    }
+    
+    /// <summary>
+    /// Purge all reservations that are older than the maxLifetimeInMinutes
+    /// </summary>
+    /// <param name="maxLifetimeInMinutes"></param>
+    public void PurgeOldReservations(int maxLifetimeInMinutes = 1)
+    {
+        foreach ((string? key, RoomReservation? r) in _reservations)
+        {
+            TimeSpan duration = DateTime.Now - r.CreatedAt;
+            if(duration.TotalMinutes > maxLifetimeInMinutes)
+                RemoveReservation(key);
+        }
+    }
+    
+    /// <summary>
+    /// Purge all rooms that are older than the maxLifetimeInMinutes
+    /// </summary>
+    /// <param name="maxLifetimeInMinutes"></param>
+    public void PurgeOldRooms(int maxLifetimeInMinutes = 120)
+    {
+        foreach ((string? key, RoomReservation? r) in _reservations)
+        {
+            TimeSpan duration = DateTime.Now - r.CreatedAt;
+            if(duration.TotalMinutes > maxLifetimeInMinutes)
+                CloseRoom(key);
+        }
+    }
+    
     public string GenerateUniqueRoomCode()
     {
         string code;
@@ -82,7 +159,7 @@ public class RoomManager
         do
         {
             roomCode = new string(Enumerable.Range(0, NUM_CHARACTERS)
-                .Select(_ => CHARACTERS[_random.Next(CHARACTERS.Length)]).ToArray());
+                .Select(_ => CHARACTERS[Random.Next(CHARACTERS.Length)]).ToArray());
         } while (BAD_ROOMS.Contains(roomCode));
 
         return roomCode;

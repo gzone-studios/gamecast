@@ -2,7 +2,7 @@
 
 namespace GameCast.Server.Models;
 
-public class Room(string code, Application app, string server)
+public class Room(string code, Application app, string server, DateTime createdAt)
 {
     /// <summary>
     ///     The unique Code of this Room.
@@ -21,6 +21,12 @@ public class Room(string code, Application app, string server)
     /// </summary>
     public string Server { get; private set; } = server;
 
+    /// <summary>
+    ///     The time when the reservation was created.
+    ///     This is used to determine the ttl of this reservation.
+    /// </summary>
+    public DateTime CreatedAt { get; set; } = createdAt;
+    
     /// <summary>
     ///     The id of the hosting user of this room.
     ///     The host is the only one who can change room or user data.

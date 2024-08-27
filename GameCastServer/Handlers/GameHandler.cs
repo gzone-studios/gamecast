@@ -11,7 +11,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
     
     private readonly ConnectionManager _connectionManager = connectionManager;
 
-    private UsernameGenerator _usernameGenerator = new UsernameGenerator();
+    private readonly UsernameGenerator _usernameGenerator = new UsernameGenerator();
     
     public User? ValidateConnection(string? roomCode, string? userId, string? username, Role role)
     {
@@ -20,7 +20,7 @@ public class GameHandler(ConnectionManager connectionManager, UserManager userMa
             return null;
 
         // validate room
-        if (!gameManager.DoesRoomExist(roomCode))
+        if (!(gameManager.DoesRoomExist(roomCode) || gameManager.DoesRoomReservationExist(roomCode)))
             return null;
         
         // validate user data

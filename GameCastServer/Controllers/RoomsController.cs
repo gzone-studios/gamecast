@@ -12,20 +12,19 @@ public class RoomsController(RoomManager roomManager) : ControllerBase
 {
     // POST /api/rooms
     [HttpPost]
-    public IActionResult CreateRoom(CreateRoomRequest request)
+    public IActionResult CreateRoomReservation(CreateRoomRequest request)
     {
         // create room
         Application app = new(request.AppId, request.AppTag, request.MinPlayers, request.MaxPlayers);
-        string roomCode = roomManager.CreateRoom(app);
+        RoomReservation reservation = roomManager.CreateReservation(app);
 
         // return ok
-        Room? room = roomManager.GetRoom(roomCode);
-        return CreatedAtAction("GetRoomByCode", new { code = roomCode }, BuildResponse(room));
+        return CreatedAtAction("GetRoomInfoByCode", new { code = reservation.Code }, BuildResponse(reservation));
     }
 
     // GET /api/rooms/{code}
     [HttpGet("{code}")]
-    public IActionResult GetRoomByCode(string code)
+    public IActionResult GetRoomInfoByCode(string code)
     {
         Room? room = roomManager.GetRoom(code);
 
@@ -38,14 +37,30 @@ public class RoomsController(RoomManager roomManager) : ControllerBase
     private static RoomDataResponse? BuildResponse(Room? room)
     {
         if (room == null) return null;
-        return new RoomDataResponse(
-            room.Code,
-            room.Application.Identifier,
-            room.Application.Tag,
-            room.Application.MinPlayers,
-            room.Application.MaxPlayers,
-            room.Server,
-            room.IsFull
-        );
+        return new RoomDataResponse()
+        {
+            Code = room.Code,
+            ApplicationId = room.Application.Identifier,
+            ApplicationTag = room.Application.Tag,
+            MinPlayers = room.Application.MinPlayers,
+            MaxPlayers = room.Application.MaxPlayers,
+            Server = room.Server,
+            IsFull = room.IsFull
+        };
+    }
+    
+    private static RoomDataResponse? BuildResponse(RoomReservation? room)
+    {
+        if (room == null) return null;
+        return new RoomDataResponse()
+        {
+            Code = room.Code,
+            ApplicationId = room.Application.Identifier,
+            ApplicationTag = room.Application.Tag,
+            MinPlayers = room.Application.MinPlayers,
+            MaxPlayers = room.Application.MaxPlayers,
+            Server = room.Server,
+            IsFull = false
+        };
     }
 }

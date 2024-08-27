@@ -7,15 +7,19 @@ public class GameManager(UserManager userManager, RoomManager roomManager)
 {
     public bool DoesRoomExist(string roomCode)
     {
-        Room? room = roomManager.GetRoom(roomCode);
-        return room != null;
+        return roomManager.RoomExists(roomCode);
+    }
+    
+    public bool DoesRoomReservationExist(string roomCode)
+    {
+        return roomManager.ReservationExists(roomCode);
     }
 
     public bool CanJoinRoom(string roomCode, string userId, Role role)
     {
+        if (roomManager.ReservationExists(roomCode)) return true;
         Room? room = roomManager.GetRoom(roomCode);
-        if (room == null) return false;
-        return CanJoinRoom(room, userId, role);
+        return room != null && CanJoinRoom(room, userId, role);
     }
 
     public bool CanJoinRoom(Room room, string userId, Role role)
@@ -40,9 +44,8 @@ public class GameManager(UserManager userManager, RoomManager roomManager)
 
     public bool JoinRoom(string roomCode, string userId, Role role)
     {
-        Room? room = roomManager.GetRoom(roomCode);
-        if (room == null) return false;
-        return JoinRoom(room, userId, role);
+        Room? room = roomManager.GetRoom(roomCode) ?? roomManager.CreateRoomFromReservation(roomCode);
+        return room != null && JoinRoom(room, userId, role);
     }
 
     public bool JoinRoom(Room room, string userId, Role role)
