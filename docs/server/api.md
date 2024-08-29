@@ -1,5 +1,6 @@
 ﻿---
 title: API
+layout: "default"
 parent: Server
 nav_order: 3
 ---
