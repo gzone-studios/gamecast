@@ -1,10 +1,10 @@
 ---
-title: Getting Started
+title: Configuration
 parent: Server
 nav_order: 2
 ---
 
-# Getting Started
+# Configuration
 {: .no_toc }
 
 ## Table of contents
@@ -14,7 +14,3 @@ nav_order: 2
 {:toc}
 
 ---
-
-## Installation
-
-### Docker
