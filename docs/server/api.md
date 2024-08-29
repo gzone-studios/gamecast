@@ -1,4 +1,4 @@
-﻿---
+---
 title: API
 parent: Server
 nav_order: 3
