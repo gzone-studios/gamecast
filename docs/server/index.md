@@ -1,6 +1,7 @@
 ---
 title: Server
 nav_order: 3
+has_children: true
 ---
 
 # Server
