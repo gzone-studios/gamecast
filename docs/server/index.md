@@ -3,7 +3,7 @@ title: Server
 nav_order: 3
 ---
 
-# GameCastServer
+# Server
 
 The GameCastServer manages the creation and management of rooms, the relaying of messages between the host and controllers, and the caching of the current state in a room.
 
