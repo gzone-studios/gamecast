@@ -1,6 +1,5 @@
 ﻿---
 title: Websockets
-layout: "default"
 parent: Server
 nav_order: 4
 ---

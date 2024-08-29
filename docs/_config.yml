@@ -7,6 +7,13 @@ repository: gzone-studios/gamecast
 
 permalink: pretty
 
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+
 # For copy button on code
 enable_copy_code_button: true
 
