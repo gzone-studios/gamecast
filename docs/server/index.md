@@ -1,5 +1,5 @@
 ﻿---
-title: GameCastServer
+title: Server
 nav_order: 3
 ---
 
