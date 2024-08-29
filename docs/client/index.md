@@ -1,5 +1,5 @@
 ---
-title: GameCastClient
+title: Client
 nav_order: 4
 ---
 
